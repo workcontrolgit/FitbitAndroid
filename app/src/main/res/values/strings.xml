@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Fitbit Test</string>
+    <string name="client_id">ENTER_CLIENT_ID_HERE</string>
+    <string name="client_secret">ENTER_CLIENT_SECRET_HERE</string>
+</resources>
