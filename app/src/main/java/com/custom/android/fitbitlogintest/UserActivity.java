@@ -28,7 +28,7 @@ public class UserActivity extends AppCompatActivity {
 
         // get user info
         // get string as json format
-        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", LoginActivity.accessToken);
+        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"));
         // transform json string to object
         JSONObject userData = FitbitApi.convertStringToJson(jsonString);
         // post name to app textview
@@ -82,8 +82,7 @@ public class UserActivity extends AppCompatActivity {
 
     private void revoke(){
         // revoke access token and delete token on storage
-        FitbitApi.revokeToken(LoginActivity.accessToken, getResources().getString(R.string.client_id), getResources().getString(R.string.client_secret));
-        LoginActivity.accessToken = "NULL";
+        FitbitApi.revokeToken(PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"), getResources().getString(R.string.client_id), getResources().getString(R.string.client_secret));
         PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", "NULL").commit();
 
         // show toast to say user has logged out
@@ -101,7 +100,7 @@ public class UserActivity extends AppCompatActivity {
 
     public void getStepsTime(View v){
         TextView console = (TextView)findViewById(R.id.resultWindow);
-        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/activities/steps/date/today/7d.json", LoginActivity.accessToken);
+        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/activities/steps/date/today/7d.json", PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"));
         JSONObject stepsObj = FitbitApi.convertStringToJson(jsonString);
         int objLen;
 
@@ -125,7 +124,7 @@ public class UserActivity extends AppCompatActivity {
 
     public void getTodaySummary(View v){
         TextView console = (TextView)findViewById(R.id.resultWindow);
-        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/activities/date/today.json", LoginActivity.accessToken);
+        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/activities/date/today.json", PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"));
         try {
             JSONObject stepsObj = FitbitApi.convertStringToJson(jsonString).getJSONObject("summary");
             String consoleText =

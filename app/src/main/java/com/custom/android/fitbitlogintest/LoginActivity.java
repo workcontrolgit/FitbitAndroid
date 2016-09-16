@@ -12,8 +12,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private int REQUEST_CODE= 0x1;
 
-    static public String accessToken;
-
     // parameters (change if necessary)
     private final String authorizeUrl = "https://www.fitbit.com/oauth2/authorize";
     private final String responseType = "token"; // 'code' = authorization code grant flow | 'token' = implicit grant flow (currently only supports implicit)
@@ -54,12 +52,10 @@ public class LoginActivity extends AppCompatActivity {
                 "expires_in=" + expiresIn + "&" +
                 "prompt=" + prompt;
 
-        accessToken = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
-
-        if (accessToken.equals("NULL")){
+        if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL").equals("NULL")){
             System.out.println("No Account Stored");
         }
-        else if (FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", accessToken).equals("java.io.IOException")){
+        else if (FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL")).equals("java.io.IOException")){
             PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", "NULL").commit();
             System.out.println("Login Failed");
         }
@@ -101,7 +97,6 @@ public class LoginActivity extends AppCompatActivity {
             if(requestCode == REQUEST_CODE){
                 String accessToken = data.getStringExtra("data");
                 accessToken = EasySocialAuthActivity.getAccessTokenFromUrl(accessToken);
-                this.accessToken = accessToken;
                 PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", accessToken).commit();
                 Intent intent = new Intent(this, UserActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_ANIMATION);
