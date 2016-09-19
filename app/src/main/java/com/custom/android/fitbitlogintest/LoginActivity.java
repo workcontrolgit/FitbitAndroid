@@ -1,12 +1,15 @@
 package com.custom.android.fitbitlogintest;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import java.util.Date;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -56,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             System.out.println("No Account Stored");
         }
         else if (FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", getAccess()).equals("java.io.IOException")){
-            setAccess("NULL");
+            removeAccess();
             System.out.println("Login Failed");
         }
         else{
@@ -113,10 +116,33 @@ public class LoginActivity extends AppCompatActivity {
 
     // get and set methods to use access token in preferences
     private String getAccess(){
-        return PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
+        try{
+            Date d = new Date(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            String encrypted = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
+            if (encrypted.equals("NULL")){
+                return "NULL";
+            }
+            String decrypted = Encryptor.decrypt(d.toString(), encrypted);
+            return decrypted;
+        }
+        catch (PackageManager.NameNotFoundException e){
+            Log.e("ERROR", e.getMessage(), e);
+            return "NULL";
+        }
     }
     private void setAccess(String token){
-        PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", token).commit();
+        try{
+            // use first install time as key
+            Date d = new Date(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            String encrypted = Encryptor.encrypt(d.toString(), token);
+            PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", encrypted).apply();
+        }
+        catch (PackageManager.NameNotFoundException e){
+            Log.e("ERROR", e.getMessage(), e);
+        }
+    }
+    private void removeAccess(){
+        PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().remove("AUTH_TOKEN").commit();
     }
 
 }
