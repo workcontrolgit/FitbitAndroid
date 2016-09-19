@@ -52,11 +52,11 @@ public class LoginActivity extends AppCompatActivity {
                 "expires_in=" + expiresIn + "&" +
                 "prompt=" + prompt;
 
-        if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL").equals("NULL")){
+        if (getAccess().equals("NULL")){
             System.out.println("No Account Stored");
         }
-        else if (FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL")).equals("java.io.IOException")){
-            PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", "NULL").commit();
+        else if (FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", getAccess()).equals("java.io.IOException")){
+            setAccess("NULL");
             System.out.println("Login Failed");
         }
         else{
@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
             if(requestCode == REQUEST_CODE){
                 String accessToken = data.getStringExtra("data");
                 accessToken = EasySocialAuthActivity.getAccessTokenFromUrl(accessToken);
-                PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", accessToken).commit();
+                setAccess(accessToken);
                 Intent intent = new Intent(this, UserActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
@@ -110,4 +110,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
+    // get and set methods to use access token in preferences
+    private String getAccess(){
+        return PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
+    }
+    private void setAccess(String token){
+        PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", token).commit();
+    }
+
 }
