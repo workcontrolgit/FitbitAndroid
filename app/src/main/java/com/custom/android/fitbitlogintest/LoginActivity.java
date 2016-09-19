@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class LoginActivity extends AppCompatActivity {
@@ -117,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
     // get and set methods to use access token in preferences
     private String getAccess(){
         try{
-            Date d = new Date(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
             String encrypted = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
             if (encrypted.equals("NULL")){
                 return "NULL";
@@ -133,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
     private void setAccess(String token){
         try{
             // use first install time as key
-            Date d = new Date(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
             String encrypted = Encryptor.encrypt(d.toString(), token);
             PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", encrypted).apply();
         }

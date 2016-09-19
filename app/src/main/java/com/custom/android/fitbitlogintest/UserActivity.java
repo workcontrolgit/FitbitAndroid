@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class UserActivity extends AppCompatActivity {
@@ -150,7 +151,7 @@ public class UserActivity extends AppCompatActivity {
     // get and set methods to use access token in preferences
     private String getAccess(){
         try{
-            Date d = new Date(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
             String encrypted = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
             if (encrypted.equals("NULL")){
                 return "NULL";
@@ -166,7 +167,7 @@ public class UserActivity extends AppCompatActivity {
     private void setAccess(String token){
         try{
             // use first install time as key
-            Date d = new Date(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
             String encrypted = Encryptor.encrypt(d.toString(), token);
             PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", encrypted).apply();
         }
