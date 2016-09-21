@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class UserActivity extends AppCompatActivity {
@@ -103,8 +106,28 @@ public class UserActivity extends AppCompatActivity {
     }
 
     public void getStepsTime(View v){
+
+        // check if user input for days is valid
+        EditText daysInput = (EditText)findViewById(R.id.daysInput);
+        if(daysInput.getText().toString().equals("") || Integer.valueOf(daysInput.getText().toString())<1){
+            // show warning toast to input valid number
+            Context context = getApplicationContext();
+            CharSequence text = "Please enter a day value greater than 0";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+            return;
+        }
+
+        // get calendar object of today - inputed number of days
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, -Integer.valueOf(daysInput.getText().toString()) + 1);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String date = df.format(c.getTime());
+
         TextView console = (TextView)findViewById(R.id.resultWindow);
-        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/activities/steps/date/today/7d.json", getAccess());
+        String url = "https://api.fitbit.com/1/user/-/activities/steps/date/" + date + "/today.json";
+        String jsonString = FitbitApi.getData(url, getAccess());
         JSONObject stepsObj = FitbitApi.convertStringToJson(jsonString);
         int objLen;
 
@@ -151,13 +174,20 @@ public class UserActivity extends AppCompatActivity {
     // get and set methods to use access token in preferences
     private String getAccess(){
         try{
-            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
-            String encrypted = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
+            /*
             if (encrypted.equals("NULL")){
                 return "NULL";
             }
+            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            String encrypted = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
             String decrypted = Encryptor.decrypt(d.toString(), encrypted);
             return decrypted;
+            */
+            if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL").equals("NULL")){
+                return "NULL";
+            }
+            return Encryptor.decrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(),
+                    PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"));
         }
         catch (PackageManager.NameNotFoundException e){
             Log.e("ERROR", e.getMessage(), e);
@@ -167,9 +197,13 @@ public class UserActivity extends AppCompatActivity {
     private void setAccess(String token){
         try{
             // use first install time as key
+            /*
             Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
             String encrypted = Encryptor.encrypt(d.toString(), token);
             PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", encrypted).apply();
+            */
+            PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN",
+                    Encryptor.encrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(), token)).apply();
         }
         catch (PackageManager.NameNotFoundException e){
             Log.e("ERROR", e.getMessage(), e);

@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -118,13 +117,20 @@ public class LoginActivity extends AppCompatActivity {
     // get and set methods to use access token in preferences
     private String getAccess(){
         try{
-            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
-            String encrypted = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
+            /*
             if (encrypted.equals("NULL")){
                 return "NULL";
             }
+            Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
+            String encrypted = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL");
             String decrypted = Encryptor.decrypt(d.toString(), encrypted);
             return decrypted;
+            */
+            if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL").equals("NULL")){
+                return "NULL";
+            }
+            return Encryptor.decrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(),
+                    PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"));
         }
         catch (PackageManager.NameNotFoundException e){
             Log.e("ERROR", e.getMessage(), e);
@@ -134,9 +140,13 @@ public class LoginActivity extends AppCompatActivity {
     private void setAccess(String token){
         try{
             // use first install time as key
+            /*
             Timestamp d = new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime);
             String encrypted = Encryptor.encrypt(d.toString(), token);
             PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN", encrypted).apply();
+            */
+            PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putString("AUTH_TOKEN",
+                    Encryptor.encrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(), token)).apply();
         }
         catch (PackageManager.NameNotFoundException e){
             Log.e("ERROR", e.getMessage(), e);
