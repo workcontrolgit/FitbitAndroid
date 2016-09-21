@@ -13,7 +13,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,15 +25,22 @@ import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 
 public class UserActivity extends AppCompatActivity {
+
+    ListView console;
+    ArrayAdapter<String> listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+
+        // initialize listview
+        console = (ListView)findViewById(R.id.resultWindow);
 
         // get user info
         // get string as json format
@@ -106,7 +115,6 @@ public class UserActivity extends AppCompatActivity {
     }
 
     public void getStepsTime(View v){
-
         // check if user input for days is valid
         EditText daysInput = (EditText)findViewById(R.id.daysInput);
         if(daysInput.getText().toString().equals("") || Integer.valueOf(daysInput.getText().toString())<1){
@@ -125,7 +133,7 @@ public class UserActivity extends AppCompatActivity {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String date = df.format(c.getTime());
 
-        TextView console = (TextView)findViewById(R.id.resultWindow);
+        ListView console = (ListView)findViewById(R.id.resultWindow);
         String url = "https://api.fitbit.com/1/user/-/activities/steps/date/" + date + "/today.json";
         String jsonString = FitbitApi.getData(url, getAccess());
         JSONObject stepsObj = FitbitApi.convertStringToJson(jsonString);
@@ -134,15 +142,19 @@ public class UserActivity extends AppCompatActivity {
         try {
             JSONArray stepsArray = stepsObj.getJSONArray("activities-steps");
             objLen = stepsArray.length();
-            String consoleText = "";
+            List<String> consoleList = new ArrayList<>();
             for (int i=objLen-1; i>=0; i--){
                 stepsObj = stepsArray.getJSONObject(i);
-                consoleText += "Date: " + stepsObj.getString("dateTime") + "\tSteps: " + stepsObj.getString("value");
-                if (i!=0){
-                    consoleText += "\n";
-                }
+                consoleList.add("Date: " + stepsObj.getString("dateTime") + "\tSteps: " + stepsObj.getString("value"));
             }
-            console.setText(consoleText);
+            // initialize adapter and set to listview
+            listAdapter = new ArrayAdapter<>(
+                    this,
+                    R.layout.list_item,
+                    R.id.list_item_view,
+                    consoleList
+            );
+            console.setAdapter(listAdapter);
         }
         catch (JSONException e){
             Log.e("ERROR", e.getMessage(), e);
@@ -150,21 +162,32 @@ public class UserActivity extends AppCompatActivity {
     }
 
     public void getTodaySummary(View v){
-        TextView console = (TextView)findViewById(R.id.resultWindow);
-        String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/activities/date/today.json", getAccess());
         try {
+
+            // connect and get data
+            String jsonString = FitbitApi.getData("https://api.fitbit.com/1/user/-/activities/date/today.json", getAccess());
+
+            // store obtained data in json object and convert to string array
             JSONObject stepsObj = FitbitApi.convertStringToJson(jsonString).getJSONObject("summary");
-            String consoleText =
-                    "Activity Calories: " + stepsObj.getString("activityCalories") +
-                    "\nCalories BMR: " + stepsObj.getString("caloriesBMR") +
-                    "\nCalories Out: " + stepsObj.getString("caloriesOut") +
-                    "\nFairly Active Minutes: " + stepsObj.getString("fairlyActiveMinutes") +
-                    "\nLightly Active Minutes: " + stepsObj.getString("lightlyActiveMinutes") +
-                    "\nMarginal Calories: " + stepsObj.getString("marginalCalories") +
-                    "\nSedentary Minutes: " + stepsObj.getString("sedentaryMinutes") +
-                    "\nSteps: " + stepsObj.getString("steps") +
-                    "\nVery Active Minutes: " + stepsObj.getString("veryActiveMinutes");
-            console.setText(consoleText);
+            List<String> consoleList = new ArrayList<>();
+            consoleList.add("Activity Calories: " + stepsObj.getString("activityCalories"));
+            consoleList.add("Calories BMR: " + stepsObj.getString("caloriesBMR"));
+            consoleList.add("Calories Out: " + stepsObj.getString("caloriesOut"));
+            consoleList.add("Fairly Active Minutes: " + stepsObj.getString("fairlyActiveMinutes"));
+            consoleList.add("Lightly Active Minutes: " + stepsObj.getString("lightlyActiveMinutes"));
+            consoleList.add("Marginal Calories: " + stepsObj.getString("marginalCalories"));
+            consoleList.add("Sedentary Minutes: " + stepsObj.getString("sedentaryMinutes"));
+            consoleList.add("Steps: " + stepsObj.getString("steps"));
+            consoleList.add( "Very Active Minutes: " + stepsObj.getString("veryActiveMinutes"));
+
+            // initialize adapter and set to listview
+            listAdapter = new ArrayAdapter<>(
+                    this,
+                    R.layout.list_item,
+                    R.id.list_item_view,
+                    consoleList
+            );
+            console.setAdapter(listAdapter);
         }
         catch (JSONException e){
             Log.e("ERROR", e.getMessage(), e);
