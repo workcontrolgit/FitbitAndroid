@@ -53,7 +53,7 @@ public class UserActivity extends AppCompatActivity {
         TextView nameText = (TextView)findViewById(R.id.fullName);
         String accountName;
         try {
-            accountName = "Logged In As: "+ userData.getJSONObject("user").getString("fullName");
+            accountName = getResources().getString(R.string.user_full_name) + " " + userData.getJSONObject("user").getString("fullName");
             nameText.setText(accountName);
         }
         catch (JSONException e){
