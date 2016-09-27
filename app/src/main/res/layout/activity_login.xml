@@ -12,7 +12,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Log In"
+        android:text="@string/login"
         android:id="@+id/login"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"

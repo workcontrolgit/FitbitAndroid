@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -75,14 +77,14 @@ public class UserActivity extends AppCompatActivity {
             case R.id.logout:
                 // create alert dialog to log out or not
                 new AlertDialog.Builder(this)
-                        .setMessage("Do you want to log out?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setMessage(getResources().getString(R.string.logout_ask))
+                        .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 revoke();
                             }
                         })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -103,9 +105,8 @@ public class UserActivity extends AppCompatActivity {
 
         // show toast to say user has logged out
         Context context = getApplicationContext();
-        CharSequence text = "You have successfully logged out";
         int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(context, getResources().getString(R.string.logout_confirm), duration);
         toast.show();
 
         // delete this activity and return to login
@@ -120,9 +121,9 @@ public class UserActivity extends AppCompatActivity {
         if(daysInput.getText().toString().equals("") || Integer.valueOf(daysInput.getText().toString())<1){
             // show warning toast to input valid number
             Context context = getApplicationContext();
-            CharSequence text = "Please enter a day value greater than 0";
             int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(context, text, duration);
+            Toast toast = Toast.makeText(context, getResources().getString(R.string.days_input_error), duration);
+            toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
             toast.show();
             return;
         }
@@ -130,7 +131,7 @@ public class UserActivity extends AppCompatActivity {
         // get calendar object of today - inputed number of days
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, -Integer.valueOf(daysInput.getText().toString()) + 1);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String date = df.format(c.getTime());
 
         ListView console = (ListView)findViewById(R.id.resultWindow);
@@ -157,6 +158,9 @@ public class UserActivity extends AppCompatActivity {
             console.setAdapter(listAdapter);
         }
         catch (JSONException e){
+            Log.e("ERROR", e.getMessage(), e);
+        }
+        catch(NullPointerException e){
             Log.e("ERROR", e.getMessage(), e);
         }
     }

@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Logged In As:"
+        android:text="@string/user_full_name"
         android:id="@+id/fullName"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
@@ -28,7 +28,7 @@
         android:layout_alignParentEnd="true" />
 
     <EditText
-        android:hint="Input number of days"
+        android:hint="@string/input_days"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
@@ -41,7 +41,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get Past Days Steps"
+        android:text="@string/get_steps"
         android:id="@+id/getStepsButton"
         android:layout_above="@+id/todaySummaryButton"
         android:layout_centerHorizontal="true"
@@ -50,7 +50,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get Today&apos;s Summary"
+        android:text="@string/get_today_summary"
         android:id="@+id/todaySummaryButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

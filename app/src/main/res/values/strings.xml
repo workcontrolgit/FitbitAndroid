@@ -2,4 +2,20 @@
     <string name="app_name">Fitbit Test</string>
     <string name="client_id">ENTER_CLIENT_ID_HERE</string>
     <string name="client_secret">ENTER_CLIENT_SECRET_HERE</string>
+
+    <string name="login">Log In</string>
+
+    <string name="days_input_error">Please enter a value greater than 0</string>
+
+    <string name="user_full_name">Logged In As: </string>
+    <string name="input_days">Enter Number of Days</string>
+    <string name="get_steps">Get Steps List</string>
+    <string name="get_today_summary">Get Today\'s Summary</string>
+
+    <string name="logout">Log Out</string>
+    <string name="logout_ask">Do you want to log out?</string>
+    <string name="logout_confirm">You have successfully logged out</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
