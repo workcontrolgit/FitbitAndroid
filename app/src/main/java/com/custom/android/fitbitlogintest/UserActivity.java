@@ -213,8 +213,12 @@ public class UserActivity extends AppCompatActivity {
             if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL").equals("NULL")){
                 return "NULL";
             }
-            return Encryptor.decrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(),
+            String dec = Encryptor.decrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(),
                     PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"));
+            if (dec == null){
+                throw new PackageManager.NameNotFoundException();
+            }
+            return dec;
         }
         catch (PackageManager.NameNotFoundException e){
             Log.e("ERROR", e.getMessage(), e);

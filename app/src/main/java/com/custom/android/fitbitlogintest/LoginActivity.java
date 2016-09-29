@@ -56,18 +56,19 @@ public class LoginActivity extends AppCompatActivity {
                 "prompt=" + prompt;
 
         if (getAccess().equals("NULL")){
-            System.out.println("No Account Stored");
+            // no account stored or app has previously stored access key
+            removeAccess();
         }
         else if (FitbitApi.getData("https://api.fitbit.com/1/user/-/profile.json", getAccess()).equals("java.io.IOException")){
+            // login failed
             removeAccess();
-            System.out.println("Login Failed");
         }
         else{
+            // logged in successfully
             // delete this activity and start user screen activity
             Intent intent = new Intent(this, UserActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
-            System.out.println("Logged In Successfully");
         }
 
     }
@@ -129,8 +130,12 @@ public class LoginActivity extends AppCompatActivity {
             if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL").equals("NULL")){
                 return "NULL";
             }
-            return Encryptor.decrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(),
+            String dec = Encryptor.decrypt((new Timestamp(getApplicationContext().getPackageManager().getPackageInfo(getApplicationContext().getPackageName(), 0).firstInstallTime)).toString(),
                     PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("AUTH_TOKEN", "NULL"));
+            if (dec == null){
+                throw new PackageManager.NameNotFoundException();
+            }
+            return dec;
         }
         catch (PackageManager.NameNotFoundException e){
             Log.e("ERROR", e.getMessage(), e);
