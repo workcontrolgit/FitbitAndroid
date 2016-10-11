@@ -1,11 +1,14 @@
 package com.custom.android.fitbitlogintest;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -35,6 +38,29 @@ class EasyWebViewClient extends WebViewClient {
         return _Dialog;
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+
+        Uri uri = request.getUrl();
+        String host = uri.getHost();
+
+        Uri callbackUri = Uri.parse(_EasySocialAuthActivity.getRedirectUrl());
+        String callbackHost = callbackUri.getHost();
+
+        if(host.equals(callbackHost)){
+            _EasySocialAuthActivity.onComplete(request.getUrl().toString());
+            //String code = uri.getQueryParameter("code");
+            //getAccessToken.execute(_EasySocialAuthActivity.getAccessToken()+code);
+
+            //GetAccessToken getAccessToken = new GetAccessToken(_EasySocialAuthActivity);
+            //getAccessToken.execute(url); // for implicit grant flow
+        }
+
+        return super.shouldOverrideUrlLoading(view, request);
+    }
+
+    @SuppressWarnings("depreciation")
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
