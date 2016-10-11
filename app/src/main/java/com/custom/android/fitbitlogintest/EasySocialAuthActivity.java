@@ -13,7 +13,7 @@ import android.webkit.WebView;
  * is a part of a WebViewClient for  more information about error code you will refer to {@link android.webkit.WebViewClient} error constants.
  *
  */
-public class EasySocialAuthActivity extends Activity implements GetAccessToken.Callback{
+public class EasySocialAuthActivity extends Activity{
 
     /** WebView is used to get the code which we use to get AccessToken from a social network.*/
     private WebView _WebView;
@@ -71,7 +71,6 @@ public class EasySocialAuthActivity extends Activity implements GetAccessToken.C
     }
 
 
-    @Override
     public void onComplete(String line) {
         easyWebViewClient.get_Dialog().dismiss();
         _WebView.stopLoading();

@@ -45,10 +45,12 @@ class EasyWebViewClient extends WebViewClient {
         String callbackHost = callbackUri.getHost();
 
         if(host.equals(callbackHost)){
+            _EasySocialAuthActivity.onComplete(url);
             //String code = uri.getQueryParameter("code");
-            GetAccessToken getAccessToken = new GetAccessToken(_EasySocialAuthActivity);
             //getAccessToken.execute(_EasySocialAuthActivity.getAccessToken()+code);
-            getAccessToken.execute(url); // for implicit grant flow
+
+            //GetAccessToken getAccessToken = new GetAccessToken(_EasySocialAuthActivity);
+            //getAccessToken.execute(url); // for implicit grant flow
         }
         return super.shouldOverrideUrlLoading(view, url);
     }
