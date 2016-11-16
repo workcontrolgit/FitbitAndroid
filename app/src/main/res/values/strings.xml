@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Fitbit Test</string>
-    <string name="client_id">ENTER_CLIENT_ID_HERE</string>
-    <string name="client_secret">ENTER_CLIENT_SECRET_HERE</string>
+    <string name="app_name">Wellness Bear</string>
+    <string name="client_id">229W3M</string>
+    <string name="client_secret">4ad9aaf8ff52e40bb5f346ac51227aa0</string>
 
     <string name="login">Log In</string>
 
